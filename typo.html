@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TypoQuick (타이포퀵) | 누구나 3초 만에 만드는 모션 타이포그래피</title>
+  <!-- 구글 폰트 & 프리텐다드 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Jua&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="typo.css">
+</head>
+<body>
+  <!-- 상단 글로벌 네비게이션 헤더 -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-title">TypoQuick</span>
+        <span class="logo-badge">PROTOTYPE</span>
+      </div>
+      <p class="header-tagline">편집 문외한을 위한 초간편 모션 타이포 스튜디오</p>
+    </div>
+
+    <div class="header-center">
+      <!-- 뷰 모드 탭 (스튜디오 ↔ PRD 기획서) -->
+      <div class="mode-tabs">
+        <button type="button" class="tab-btn active" id="tabStudioBtn">🎨 모션 스튜디오</button>
+        <button type="button" class="tab-btn" id="tabPrdBtn">📄 제품 기획서 (PRD)</button>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- 화면 비율 선택 -->
+      <div class="ratio-selector">
+        <label for="aspectRatio">화면 비율:</label>
+        <select id="aspectRatio" class="select-box">
+          <option value="9:16">9:16 (쇼츠/릴스)</option>
+          <option value="16:9">16:9 (유튜브)</option>
+          <option value="1:1">1:1 (인스타 피드)</option>
+        </select>
+      </div>
+      <a href="#prd" class="btn btn-outline-sm" id="quickPrdLink">기획서 보기</a>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       1. 모션 스튜디오 메인 화면 (3단 분할: 컨트롤러 / 캔버스 / 프리셋 갤러리)
+       ========================================================================= -->
+  <main class="studio-container" id="studioView">
+    <!-- 좌측 컨트롤러 패널 -->
+    <aside class="panel left-panel">
+      <div class="panel-section">
+        <h3 class="panel-title">1. 텍스트 입력</h3>
+        <div class="form-group">
+          <textarea id="textInput" rows="3" class="text-area" placeholder="문구를 입력하세요. (줄바꿈 지원)">처음이어도 할 수 있어요!
+타이포퀵 모션 타이포</textarea>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3 class="panel-title">2. 폰트 & 타이포 스타일</h3>
+        <div class="form-group">
+          <label for="fontFamily">폰트 패밀리</label>
+          <select id="fontFamily" class="select-box">
+            <option value="'Pretendard', sans-serif">Pretendard (모던 깔끔)</option>
+            <option value="'Black Han Sans', sans-serif">Black Han Sans (볼드 임팩트)</option>
+            <option value="'Do Hyeon', sans-serif">Do Hyeon (방송 자막풍)</option>
+            <option value="'Jua', sans-serif">Jua (친근한 캐주얼)</option>
+            <option value="'Montserrat', sans-serif">Montserrat (영문 볼드)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="fontSize">글자 크기 (<span id="fontSizeVal">48</span>px)</label>
+            <input type="range" id="fontSize" min="24" max="80" value="48" class="range-slider">
+          </div>
+          <div class="form-group half">
+            <label for="letterSpacing">자간 (<span id="letterSpacingVal">0</span>px)</label>
+            <input type="range" id="letterSpacing" min="-4" max="16" value="0" class="range-slider">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>글자 색상</label>
+          <div class="color-palette">
+            <button type="button" class="color-chip active" style="background-color: #ffffff;" data-color="#ffffff" title="화이트"></button>
+            <button type="button" class="color-chip" style="background-color: #bbf94f;" data-color="#bbf94f" title="하이볼티지 라임"></button>
+            <button type="button" class="color-chip" style="background-color: #ffe600;" data-color="#ffe600" title="옐로우"></button>
+            <button type="button" class="color-chip" style="background-color: #00f0ff;" data-color="#00f0ff" title="시안 블루"></button>
+            <button type="button" class="color-chip" style="background-color: #ff3366;" data-color="#ff3366" title="핫핑크"></button>
+            <input type="color" id="customColor" value="#ffffff" class="color-picker-input" title="직접 선택">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <h3 class="panel-title">3. 캔버스 배경 설정</h3>
+        <div class="bg-mode-group">
+          <button type="button" class="bg-btn active" data-bg="transparent">
+            <span class="bg-icon-checker"></span> 투명 (알파)
+          </button>
+          <button type="button" class="bg-btn" data-bg="#1a1d22">
+            <span class="bg-icon-solid" style="background: #1a1d22;"></span> 다크
+          </button>
+          <button type="button" class="bg-btn" data-bg="#00ff00">
+            <span class="bg-icon-solid" style="background: #00ff00;"></span> 크로마키
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 중앙 실시간 캔버스 프리뷰 -->
+    <section class="center-stage">
+      <div class="canvas-wrapper-outer">
+        <div class="canvas-wrapper-inner" id="canvasWrapper">
+          <canvas id="motionCanvas" width="1080" height="1920"></canvas>
+          <div class="live-tag">LIVE 60FPS</div>
+        </div>
+      </div>
+
+      <!-- 타임라인 & 재생 컨트롤러 -->
+      <div class="playback-controls">
+        <button type="button" class="ctrl-btn" id="btnPlayPause" title="재생 / 일시정지">
+          <span id="playIcon">⏸</span>
+        </button>
+        <button type="button" class="ctrl-btn" id="btnRestart" title="처음부터 다시">
+          ↺
+        </button>
+        <div class="timeline-bar-wrap">
+          <div class="timeline-bar" id="timelineBar"></div>
+        </div>
+        <div class="time-display" id="timeDisplay">0.0s / 3.0s</div>
+        <div class="speed-select-wrap">
+          <select id="playbackSpeed" class="select-speed">
+            <option value="0.5">0.5x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.5">1.5x</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 하단 원클릭 렌더링 & 내보내기 배너 -->
+      <div class="export-banner">
+        <div class="export-info">
+          <strong>원클릭 렌더링 엔진</strong>
+          <span>브라우저 WebCodecs로 서버 지연 없이 3초 만에 파일 생성!</span>
+        </div>
+        <div class="export-actions">
+          <select id="exportFormat" class="select-box export-select">
+            <option value="webm">WebM (투명 배경 동영상)</option>
+            <option value="mp4">MP4 (호환 동영상)</option>
+            <option value="gif">GIF (움짤 이미지)</option>
+          </select>
+          <button type="button" class="btn btn-primary" id="btnExport">
+            <span class="btn-icon">⚡</span>
+            <span>렌더링 & 다운로드</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 렌더링 프로그레스 오버레이 -->
+      <div class="render-overlay" id="renderOverlay">
+        <div class="render-modal">
+          <div class="spinner"></div>
+          <h4 id="renderStatusText">초고속 렌더링 진행 중...</h4>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p class="render-tip">브라우저 GPU 가속을 사용해 투명 비디오를 생성하고 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 우측 프리셋 라이브러리 패널 -->
+    <aside class="panel right-panel">
+      <div class="panel-section">
+        <div class="preset-header">
+          <h3 class="panel-title">4. 모션 프리셋 선택</h3>
+          <span class="preset-count">6개 프리셋</span>
+        </div>
+        <p class="preset-hint">프리셋을 클릭하면 실시간 모션이 즉시 교체됩니다.</p>
+      </div>
+
+      <div class="presets-grid">
+        <!-- 1. 통통 튀는 바운스 -->
+        <article class="preset-card active" data-preset="bounce">
+          <div class="preset-icon">🏀</div>
+          <div class="preset-info">
+            <h4 class="preset-name">1. 통통 바운스 (Bounce)</h4>
+            <p class="preset-desc">글자가 탄성 있게 튀어오르며 생동감을 부여합니다.</p>
+          </div>
+          <div class="preset-badge">인기 No.1</div>
+        </article>
+
+        <!-- 2. 한 글자씩 타자기 -->
+        <article class="preset-card" data-preset="typewriter">
+          <div class="preset-icon">⌨️</div>
+          <div class="preset-info">
+            <h4 class="preset-name">2. 타자기 (Typewriter)</h4>
+            <p class="preset-desc">커서와 함께 한 글자씩 탁탁 입력되는 연출입니다.</p>
+          </div>
+          <div class="preset-badge">스토리형</div>
+        </article>
+
+        <!-- 3. 글리치 & 쉐이크 -->
+        <article class="preset-card" data-preset="glitch">
+          <div class="preset-icon">⚡</div>
+          <div class="preset-info">
+            <h4 class="preset-name">3. 글리치 (Glitch)</h4>
+            <p class="preset-desc">RGB 분리와 노이즈로 힙하고 역동적인 임팩트 효과.</p>
+          </div>
+          <div class="preset-badge">숏폼 추천</div>
+        </article>
+
+        <!-- 4. 네온 펄스 -->
+        <article class="preset-card" data-preset="neon">
+          <div class="preset-icon">💡</div>
+          <div class="preset-info">
+            <h4 class="preset-name">4. 네온사인 (Neon)</h4>
+            <p class="preset-desc">빛이 깜빡이며 밝아지는 사이버펑크 네온 연출.</p>
+          </div>
+          <div class="preset-badge">트렌디</div>
+        </article>
+
+        <!-- 5. 물결 웨이브 -->
+        <article class="preset-card" data-preset="wave">
+          <div class="preset-icon">🌊</div>
+          <div class="preset-info">
+            <h4 class="preset-name">5. 물결 웨이브 (Wave)</h4>
+            <p class="preset-desc">파도타기처럼 부드럽게 글자들이 오르내립니다.</p>
+          </div>
+          <div class="preset-badge">부드러움</div>
+        </article>
+
+        <!-- 6. 슬라이드 & 페이드 -->
+        <article class="preset-card" data-preset="slide">
+          <div class="preset-icon">🚀</div>
+          <div class="preset-info">
+            <h4 class="preset-name">6. 모던 슬라이드 (Slide)</h4>
+            <p class="preset-desc">아래에서 위로 매끄럽게 올라오는 방송 뉴스 스타일.</p>
+          </div>
+          <div class="preset-badge">깔끔형</div>
+        </article>
+      </div>
+
+      <div class="preset-footer-note">
+        <div class="note-box">
+          <strong>💡 편집 문외한 꿀팁</strong>
+          <p>투명 배경(WebM)으로 다운로드하면 캡컷(CapCut)이나 프리미어에서 영상 위에 자막처럼 바로 합성할 수 있습니다.</p>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- =========================================================================
+       2. 제품 요구사항 정의서 (PRD) 뷰어 모달 / 풀뷰
+       ========================================================================= -->
+  <section class="prd-container hidden" id="prdView">
+    <div class="container prd-content-box">
+      <div class="prd-header-row">
+        <div>
+          <span class="prd-eyebrow">PRODUCT REQUIREMENT DOCUMENT</span>
+          <h1 class="prd-main-title">타이포퀵 (TypoQuick) 제품 요구사항 정의서</h1>
+          <p class="prd-sub">AI개발과실전 3주차 실습 · create_prd.py 워드 문서 기반 동기화 웹뷰어</p>
+        </div>
+        <button type="button" class="btn btn-outline" id="backToStudioBtn">← 모션 스튜디오로 돌아가기</button>
+      </div>
+
+      <!-- PRD 문서 내용 본문 -->
+      <article class="prd-body">
+        <!-- 1. 기획 개요 -->
+        <section class="prd-section">
+          <h2 class="sec-heading">1. 서비스 개요 및 문제 정의 (기획 배경)</h2>
+          <p class="sec-lead">
+            복잡한 영상 편집 소프트웨어(애프터이펙트, 모션그래픽 툴)를 다루지 못하는 초보자도 텍스트 입력과 프리셋 클릭만으로 전문 방송급 모션 타이포그래피를 제작하고 실시간 브라우저 렌더링으로 다운로드할 수 있는 웹 서비스입니다.
+          </p>
+          <div class="table-responsive">
+            <table class="prd-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">구분</th>
+                  <th>상세 내용 (워크시트 4대 질문 프레임워크)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>[무엇] 서비스 명칭</strong></td>
+                  <td>편집 초보자를 위한 원클릭 모션 타이포그래피 제작 및 즉시 렌더링 웹앱, <strong>"타이포퀵 (TypoQuick)"</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>[누구] 타겟 사용자</strong></td>
+                  <td>인스타그램 릴스·유튜브 쇼츠·틱톡 입문 크리에이터, 대학생 발표자, 편집 초보자</td>
+                </tr>
+                <tr>
+                  <td><strong>[왜] 해결하는 문제</strong></td>
+                  <td>영상에 트렌디한 텍스트 모션을 넣고 싶지만 키프레임 그래프나 마스크 등 높은 러닝커브에 좌절하고, 비싼 유료 템플릿에 의존해야 하는 불편함을 해결</td>
+                </tr>
+                <tr>
+                  <td><strong>[핵심 기능] 3대 기능</strong></td>
+                  <td>
+                    1) 텍스트 입력 즉시 실시간 60fps 인터랙티브 프리뷰<br>
+                    2) 바운스, 글리치, 타자기 등 20종 모션 프리셋 원클릭 전환<br>
+                    3) 브라우저 자체 인코딩(WebCodecs)을 통한 투명 배경 WebM/MP4/GIF 3초 고속 렌더링
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 2. 타겟 사용자 분석 -->
+        <section class="prd-section">
+          <h2 class="sec-heading">2. 타겟 페르소나 및 핵심 니즈</h2>
+          <div class="persona-callout">
+            <div class="persona-badge">타겟 페르소나</div>
+            <h3>이민서 (21세, 대학생 & 숏폼 크리에이터 입문자)</h3>
+            <ul class="prd-bullet-list">
+              <li><strong>상황:</strong> 일상 브이로그와 학과 꿀팁 쇼츠를 제작하고 있으나, 밋밋한 기본 자막 때문에 시청 지속시간(Retention)이 낮아 고민임.</li>
+              <li><strong>Pain Point:</strong> 애프터이펙트를 켰다가 복잡한 UI와 렌더큐 설정에 질려 30분 만에 종료함. 캡컷 기본 모션은 너무 흔해서 나만의 개성이 부족함.</li>
+              <li><strong>핵심 니즈:</strong> <em>"문구 입력하고 예쁜 모션 누르면 5초 만에 투명 영상으로 다운받아서 내 영상 위에 바로 얹어 쓰고 싶어요!"</em></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 3. 기술적 구현 방향 -->
+        <section class="prd-section">
+          <h2 class="sec-heading">3. 기술적 구현 방향 및 시스템 아키텍처</h2>
+          <p class="sec-desc">서버 비용 0원과 딜레이 없는 실시간 60fps 렌더링을 위해 <strong>HTML5 Canvas 2D + WebCodecs API</strong> 파이프라인을 구축했습니다.</p>
+          <div class="table-responsive">
+            <table class="prd-table">
+              <thead>
+                <tr>
+                  <th>구분</th>
+                  <th>기술 스택 / 방식</th>
+                  <th>도입 이유 및 장점</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>모션 렌더러</strong></td>
+                  <td>HTML5 Canvas 2D + requestAnimationFrame</td>
+                  <td>글자 단위 분할(Splitting) 및 시간 기반 Easing 보간으로 60fps 실시간 부드러운 애니메이션 구현</td>
+                </tr>
+                <tr>
+                  <td><strong>동영상 인코딩</strong></td>
+                  <td>MediaRecorder & WebCodecs API</td>
+                  <td>서버로 영상 데이터를 보내지 않고 브라우저 GPU 가속으로 3초 만에 투명 배경 WebM/MP4 즉시 렌더링</td>
+                </tr>
+                <tr>
+                  <td><strong>폰트 파이프라인</strong></td>
+                  <td>FontFace API & 구글 웹폰트</td>
+                  <td>Pretendard, Black Han Sans 등 상업용 무료 고품질 폰트를 캔버스에 벡터 형태로 지연 없이 로딩</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 4. 기능 요구사항 -->
+        <section class="prd-section">
+          <h2 class="sec-heading">4. 제품 기능 요구사항 (Functional Requirements)</h2>
+          <div class="table-responsive">
+            <table class="prd-table">
+              <thead>
+                <tr>
+                  <th style="width: 15%;">ID</th>
+                  <th style="width: 25%;">기능 명칭</th>
+                  <th>세부 요구사항</th>
+                  <th style="width: 15%;">우선순위</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>FR-01</strong></td>
+                  <td>텍스트 에디터</td>
+                  <td>실시간 문구 입력, 자간 조절, 폰트 드롭다운, 글자 색상 선택</td>
+                  <td><span class="p-badge p0">P0 (필수)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>FR-02</strong></td>
+                  <td>모션 프리셋 갤러리</td>
+                  <td>바운스, 타자기, 글리치, 네온, 웨이브 등 사전 모션을 원클릭으로 교체</td>
+                  <td><span class="p-badge p0">P0 (필수)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>FR-03</strong></td>
+                  <td>실시간 타임라인 컨트롤</td>
+                  <td>재생/일시정지, 처음부터 다시, 재생 속도 조절(0.5x~1.5x)</td>
+                  <td><span class="p-badge p0">P0 (필수)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>FR-04</strong></td>
+                  <td>초고속 클라이언트 렌더링</td>
+                  <td>투명 배경 WebM, 일반 MP4, GIF 포맷으로 3초 이내 다운로드 생성</td>
+                  <td><span class="p-badge p0">P0 (필수)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>FR-05</strong></td>
+                  <td>화면 비율 프리셋</td>
+                  <td>9:16 (숏폼), 16:9 (유튜브), 1:1 (피드) 원클릭 전환</td>
+                  <td><span class="p-badge p1">P1 (중요)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 5. 워드 문서 다운로드 안내 -->
+        <section class="prd-section download-box">
+          <div class="download-info">
+            <h3>📥 Microsoft Word (.docx) 원본 문서 안내</h3>
+            <p>본 PRD 문서는 파이썬 스크립트(<code>create_prd.py</code>)를 통해 <code>타이포그래피_웹서비스_PRD.docx</code> 파일로도 자동 생성되어 있습니다.</p>
+          </div>
+          <div class="download-actions">
+            <button type="button" class="btn btn-primary" onclick="alert('로컬 작업 디렉토리(c:/AI개발과실전/3주차/타이포그래피_웹서비스_PRD.docx)에 저장되어 있습니다.');">
+              워드 문서 위치 확인
+            </button>
+          </div>
+        </section>
+      </article>
+    </div>
+  </section>
+
+  <script src="typo.js"></script>
+</body>
+</html>
+
